@@ -4,9 +4,9 @@ import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
-  addComents,
-  deleteComents,
-  loadComents,
+  addComment,
+  deleteCommentById,
+  loadComments,
   setVisible,
 } from '../features/commentsSlice';
 import { CommentData } from '../types/Comment';
@@ -17,12 +17,15 @@ type Props = {
 
 export const PostDetails: React.FC<Props> = ({ post }) => {
   const dispatch = useAppDispatch();
-  const { comments, loaded, hasError, visible } = useAppSelector(
-    state => state.comments,
-  );
+  const {
+    items: comments,
+    loaded,
+    hasError,
+    visible,
+  } = useAppSelector(state => state.comments);
 
   useEffect(() => {
-    dispatch(loadComents(post.id));
+    dispatch(loadComments(post.id));
   }, [post.id, dispatch]);
 
   return (
@@ -68,7 +71,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
                     type="button"
                     className="delete is-small"
                     aria-label="delete"
-                    onClick={() => dispatch(deleteComents(comment.id))}
+                    onClick={() => dispatch(deleteCommentById(comment.id))}
                   >
                     delete button
                   </button>
@@ -96,7 +99,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
         {loaded && !hasError && visible && (
           <NewCommentForm
             onSubmit={(data: CommentData) => {
-              return dispatch(addComents({ ...data, postId: post.id }));
+              return dispatch(addComment({ ...data, postId: post.id }));
             }}
           />
         )}

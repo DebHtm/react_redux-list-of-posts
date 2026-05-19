@@ -2,38 +2,35 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createComment, deleteComment, getPostComments } from '../api/comments';
 import { Comment } from '../types/Comment';
+import { CommentData } from '../types/Comment';
 
-interface CommentData {
-  name: string;
-  email: string;
-  body: string;
-}
-
-export const loadComents = createAsyncThunk(
-  'posts/loadComents',
+export const loadComments = createAsyncThunk(
+  'comments/loadComments',
   async (postId: number) => {
     return getPostComments(postId);
   },
 );
 
-export const addComents = createAsyncThunk(
-  'posts/addComents',
+export const addComment = createAsyncThunk(
+  'comments/addComment',
   async (data: CommentData & { postId: number }) => {
     return createComment(data);
   },
 );
 
-export const deleteComents = createAsyncThunk(
-  'posts/deleteComents',
+export const deleteCommentById = createAsyncThunk(
+  'comments/deleteComment',
   async (commentId: number) => {
-    return deleteComment(commentId);
+    await deleteComment(commentId);
+
+    return commentId;
   },
 );
 
 const commentsSlice = createSlice({
   name: 'comments',
   initialState: {
-    comments: [] as Comment[],
+    items: [] as Comment[],
     loaded: false,
     hasError: false,
     visible: false,
@@ -43,36 +40,34 @@ const commentsSlice = createSlice({
       state.visible = action.payload;
     },
   },
-
   extraReducers: builder => {
     builder
-      .addCase(loadComents.pending, state => {
+      .addCase(loadComments.pending, state => {
         state.loaded = false;
         state.hasError = false;
         state.visible = false;
       })
-      .addCase(loadComents.fulfilled, (state, action) => {
+      .addCase(loadComments.fulfilled, (state, action) => {
         state.loaded = true;
-        state.comments = action.payload;
+        state.items = action.payload;
       })
-      .addCase(loadComents.rejected, state => {
+      .addCase(loadComments.rejected, state => {
         state.loaded = true;
         state.hasError = true;
       })
-      .addCase(addComents.fulfilled, (state, action) => {
-        state.comments.push(action.payload);
+      .addCase(addComment.fulfilled, (state, action) => {
+        state.items.push(action.payload);
       })
-      .addCase(addComents.rejected, state => {
+      .addCase(addComment.rejected, state => {
         state.hasError = true;
       })
-      .addCase(deleteComents.pending, (state, action) => {
-        state.comments = state.comments.filter(
-          com => com.id !== action.meta.arg,
+      .addCase(deleteCommentById.pending, (state, action) => {
+        state.items = state.items.filter(
+          comment => comment.id !== action.meta.arg,
         );
       });
   },
 });
 
 export const { setVisible } = commentsSlice.actions;
-
 export default commentsSlice.reducer;
