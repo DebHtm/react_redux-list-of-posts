@@ -45,7 +45,10 @@ export const App: React.FC = () => {
               <div className="block">
                 <UserSelector
                   value={author}
-                  onChange={user => dispatch(setAuthor(user))}
+                  onChange={user => {
+                    dispatch(setAuthor(user));
+                    dispatch(setSelectedPost(null));
+                  }}
                 />
               </div>
 
@@ -57,7 +60,7 @@ export const App: React.FC = () => {
                 {author && loaded && hasError && (
                   <div
                     className="notification is-danger"
-                    data-cy="PostsloadedhasError"
+                    data-cy="PostsLoadingError"
                   >
                     Something went wrong!
                   </div>
