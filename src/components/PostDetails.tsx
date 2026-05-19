@@ -98,8 +98,8 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
 
         {loaded && !hasError && visible && (
           <NewCommentForm
-            onSubmit={(data: CommentData) => {
-              return dispatch(addComment({ ...data, postId: post.id }));
+            onSubmit={async (data: CommentData) => {
+              await dispatch(addComment({ ...data, postId: post.id }));
             }}
           />
         )}
