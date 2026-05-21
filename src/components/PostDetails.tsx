@@ -12,7 +12,7 @@ import {
 import { CommentData } from '../types/Comment';
 
 type Props = {
-  post: Post | null;
+  post: Post;
 };
 
 export const PostDetails: React.FC<Props> = ({ post }) => {
@@ -25,14 +25,8 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   } = useAppSelector(state => state.comments);
 
   useEffect(() => {
-    if (post) {
-      dispatch(loadComments(post.id));
-    }
+    dispatch(loadComments(post.id));
   }, [post, dispatch]);
-
-  if (!post) {
-    return <h1>Choose a post</h1>;
-  }
 
   return (
     <div className="content" data-cy="PostDetails">
